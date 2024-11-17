@@ -1,41 +1,33 @@
-from scapy.all import sniff, send, IP, TCP
-import time
+from netfilterqueue import NetfilterQueue # type: ignore
+from scapy.all import IP
 
-INTERFACE = "enp0s3"
+def packet_callback(pkt):
+    # Get the packet (as Scapy packet)
+    packet = IP(pkt.get_payload())
 
-def forward_packet(packet):
+    # Print packet information (source IP, destination IP, etc.)
+    print(f"Packet from {packet.src} to {packet.dst}")
+
+    # You can also modify the packet here (if needed)
+    # For example, drop the packet
+    # pkt.drop()
+
+    # Accept the packet (send it forward)
+    pkt.accept()
+
+def main():
+    # Initialize the NetfilterQueue
+    nfqueue = NetfilterQueue()
+
+    # Bind the NetfilterQueue to queue number 0 (as set in iptables)
+    nfqueue.bind(0, packet_callback)
+
     try:
-        if IP in packet:
-            if TCP in packet:
-                print(f"[TCP] Ignoring packet to {packet[IP].dst} from {packet[IP].src}")
-                return
-            
-            print(f"[Forwarding] Packet to {packet[IP].dst} from {packet[IP].src}")
-            
-            # Create new IP packet with same content but direct it to gateway
-            new_packet = IP(
-                src=packet[IP].src,
-                dst=packet[IP].dst,
-                ttl=packet[IP].ttl
-            )
-            
-            # Copy the payload (everything after IP header)
-            new_packet.payload = packet[IP].payload
-            
-            # Send using send() (L3) instead of sendp() (L2)
-            send(new_packet, verbose=1)
-            
-    except Exception as e:
-        print(f"Error forwarding packet: {e}")
-    
-    time.sleep(1)
-
-def packet_listener():
-    print(f"Listening for packets on interface {INTERFACE}...")
-    sniff(iface=INTERFACE, prn=forward_packet, store=0)
+        print("Starting packet interception...")
+        nfqueue.run()
+    except KeyboardInterrupt:
+        print("Exiting...")
+        nfqueue.unbind()
 
 if __name__ == "__main__":
-    try:
-        packet_listener()
-    except KeyboardInterrupt:
-        print("\nExiting...")
+    main()
