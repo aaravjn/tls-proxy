@@ -14,7 +14,6 @@ if [[ ! $GATEWAY_IP =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
     exit 1
 fi
 
-# Get the machine's primary IP address
 MY_IP=$(get_machine_ip)
 
 # Check if the IP address was found
