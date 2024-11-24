@@ -8,3 +8,4 @@ get_machine_ip() {
 MACHINE_IP=$(get_machine_ip)
 
 sudo iptables -A PREROUTING -t nat -p tcp ! -d $MACHINE_IP -j REDIRECT
+

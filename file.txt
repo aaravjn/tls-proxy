@@ -1,0 +1,60 @@
+(
+    {
+        'nfgen_family': 2, 
+        'version': 0, 
+        'res_id': 0, 
+        'attrs': [
+            (
+                'CTA_TUPLE_ORIG', 
+                {
+                    'attrs': [
+                        (
+                            'CTA_TUPLE_IP', 
+                            {
+                                'attrs': 
+                                [
+                                    (
+                                        'CTA_IP_V4_SRC', 
+                                        '10.0.2.15'
+                                    ), 
+                                    (
+                                        'CTA_IP_V4_DST', 
+                                        '1.1.1.1'
+                                    )
+                                ]
+                            }, 
+                            32768
+                        ), 
+                        (
+                            'CTA_TUPLE_PROTO', 
+                            {
+                                'attrs': [
+                                    ('CTA_PROTO_NUM', 6), 
+                                    ('CTA_PROTO_SRC_PORT', 50516), 
+                                    ('CTA_PROTO_DST_PORT', 80)]}, 32768)]}, 32768
+            ), 
+            (
+                'CTA_TUPLE_REPLY', 
+                {'attrs': [
+                    (
+                        'CTA_TUPLE_IP', 
+                        {
+                            'attrs': [
+                                ('CTA_IP_V4_SRC', '10.0.2.4'), ('CTA_IP_V4_DST', '10.0.2.15')
+                            ]
+                        }, 32768
+                    ), 
+                    ('CTA_TUPLE_PROTO', {'attrs': [('CTA_PROTO_NUM', 6), ('CTA_PROTO_SRC_PORT', 80), ('CTA_PROTO_DST_PORT', 50516)]}, 32768)]}, 32768), ('CTA_STATUS', 430), ('CTA_MARK', 0), ('CTA_ID', 2688946572), ('CTA_USE', 1), ('CTA_TIMEOUT', 432000), ('CTA_PROTOINFO', {'attrs': [('CTA_PROTOINFO_TCP', {'attrs': [('CTA_PROTOINFO_TCP_STATE', 3), ('CTA_PROTOINFO_TCP_WSCALE_ORIGINAL', 7), ('CTA_PROTOINFO_TCP_WSCALE_REPLY', 7), ('CTA_PROTOINFO_TCP_FLAGS_ORIGINAL', (35, 0)), ('CTA_PROTOINFO_TCP_FLAGS_REPLY', (35, 0))]}, 32768)]}, 32768)
+        ], 
+        'header': {
+            'length': 212, 
+            'type': 256, 
+            'flags': 34, 
+            'sequence_number': 255, 
+            'pid': 1509, 
+            'error': None, 
+            'target': 'localhost', 
+            'stats': Stats(qsize=0, delta=0, delay=0)
+        }
+    },
+)
