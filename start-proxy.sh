@@ -7,5 +7,12 @@ get_machine_ip() {
 
 MACHINE_IP=$(get_machine_ip)
 
-sudo iptables -A PREROUTING -t nat -p tcp ! -d $MACHINE_IP -j REDIRECT
+# Check if the rule already exists
+if ! sudo iptables -t nat -C PREROUTING -p tcp ! -d $MACHINE_IP -j REDIRECT 2>/dev/null; then
+    # Add the rule if it does not exist
+    sudo iptables -A PREROUTING -t nat -p tcp ! -d $MACHINE_IP -j REDIRECT
+else
+    echo "Rule already exists"
+fi
 
+sudo python3 main.py
