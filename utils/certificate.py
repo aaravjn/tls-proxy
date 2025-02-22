@@ -14,26 +14,21 @@ def create_domain_certificate(domain_name: str,
                               output_cert_path: str = "output_certificate.crt",
                               output_key_path: str = "output_key.key",
                               days_valid: int = 365):
-    # Load the issuer (CA) certificate
     with open(issuer_cert_path, 'rb') as f:
         issuer_cert = x509.load_pem_x509_certificate(f.read())
         
-    # Load the issuer's (CA's) private key
     with open(issuer_key_path, 'rb') as f:
         issuer_key = load_pem_private_key(f.read(), password=None)
         
-    # Generate a new key pair for the domain certificate
     new_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
     )
     
-    # Create a new certificate
     subject = x509.Name([
         x509.NameAttribute(NameOID.COMMON_NAME, domain_name),
     ])
     
-    # Set the certificate's public key (from the newly generated key pair)
     new_cert = x509.CertificateBuilder().subject_name(
         subject
     ).issuer_name(
@@ -59,7 +54,6 @@ def create_domain_certificate(domain_name: str,
         critical=False,
     ).sign(issuer_key, hashes.SHA256())
     
-    # Dump the new certificate and private key to PEM format
     cert_pem = new_cert.public_bytes(serialization.Encoding.PEM)
     key_pem = new_key.private_bytes(
         encoding=serialization.Encoding.PEM,
