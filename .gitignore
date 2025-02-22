@@ -1,0 +1,4 @@
+test*.ipynb
+test*.py
+output_*.*
+__pycache__/

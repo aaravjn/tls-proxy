@@ -33,8 +33,8 @@ def initiate_connection(client_socket: socket, client_address, client_port, dest
 if __name__ == "__main__":
 
     PORTS = [
-        80, # HTTP
-        # 443, # HTTPS
+        # 80, # HTTP
+        443, # HTTPS
         # 21, # FTP
         # 25, # SMTP
         # 853, # DNS-over-TLS
