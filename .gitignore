@@ -1,4 +1,5 @@
 test*.ipynb
 test*.py
 output_*.*
-__pycache__/
+__pycache__
+certs/*

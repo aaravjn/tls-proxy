@@ -1,6 +1,6 @@
 import socket
 import threading
-from TCPConnectors.server_socket_manager import ServerSocketManager
+from Connectors.server_socket_manager import ServerSocketManager
 from OpenSSL import SSL
 from utils.certificate import create_domain_certificate
 import time
@@ -25,27 +25,38 @@ class ClientSocketManager:
         print(f"Disconnected with client {self.ip} and port {self.port}")
 
     def handle_client(self):
-        def sni_callback(sock):
+        def sni_callback(sock: SSL.Connection):
             server_name = sock.get_servername().decode('ascii')
 
-            while self.server_socket_obj is None:
-                time.sleep(0.5)
-            self.server_socket_obj.perform_tls_handshake(server_name)
+            # while self.server_socket_obj is None:
+            #     time.sleep(0.1)
             
-            create_domain_certificate(server_name, "domain.crt", "domain.key")
+            # self.server_socket_obj.perform_tls_handshake(server_name)
+            # time.sleep(2)
+
+            file_name = create_domain_certificate(server_name, "issuer-ca.crt", "issuer-ca.key")
             
             new_ctx = SSL.Context(SSL.TLS_SERVER_METHOD)
-            new_ctx.use_certificate_file("output_certificate.crt")
-            new_ctx.use_privatekey_file("output_key.key")
+            
+            new_ctx.use_certificate_file(f"./certs/{file_name}.crt")
+            new_ctx.use_privatekey_file(f"./certs/{file_name}.key")
 
             sock.set_context(new_ctx)
 
         context = SSL.Context(SSL.TLS_SERVER_METHOD)
         context.set_tlsext_servername_callback(sni_callback)
+        context.set_options(SSL.OP_NO_TICKET)
 
         self.ssl_socket = SSL.Connection(context, self.socket)
         self.ssl_socket.set_accept_state()
-        self.ssl_socket.do_handshake()
+
+        try:
+            self.ssl_socket.do_handshake()
+        except:
+            self.close_socket()
+            self.server_socket_obj.close_socket()
+            print("SSL handshake failed")
+            return
 
         while self.socket_open:
             message = self.ssl_socket.recv(4096)

@@ -6,13 +6,11 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 import random
 import datetime as dt
 from datetime import datetime, timedelta
-
+import uuid
 
 def create_domain_certificate(domain_name: str,
                               issuer_cert_path: str,
                               issuer_key_path: str,
-                              output_cert_path: str = "output_certificate.crt",
-                              output_key_path: str = "output_key.key",
                               days_valid: int = 365):
     with open(issuer_cert_path, 'rb') as f:
         issuer_cert = x509.load_pem_x509_certificate(f.read())
@@ -61,7 +59,13 @@ def create_domain_certificate(domain_name: str,
         encryption_algorithm=serialization.NoEncryption()
     )
 
-    with open(output_cert_path, "wb") as f:
+    random_uuid = uuid.uuid4().hex
+
+    random_uuid = "output"
+
+    with open(f"./certs/{random_uuid}.crt", "wb") as f:
         f.write(cert_pem)
-    with open(output_key_path, "wb") as f:
+    with open(f"./certs/{random_uuid}.key", "wb") as f:
         f.write(key_pem)
+    
+    return random_uuid

@@ -1,8 +1,8 @@
 import threading
 import socket
 
-from TCPConnectors.client_socket_manager import ClientSocketManager
-from TCPConnectors.server_socket_manager import ServerSocketManager
+from Connectors.client_socket_manager import ClientSocketManager
+from Connectors.server_socket_manager import ServerSocketManager
 from utils.conntrack import get_conntrack_entry
 
 def run_socket(port):
@@ -22,8 +22,7 @@ def initiate_connection(client_socket: socket, client_address, client_port, dest
     client_socket_obj = ClientSocketManager(client_socket, client_address, client_port, destination_port)
     destination_addr = get_conntrack_entry(client_address, client_port)
     try:
-        server_socket_obj = ServerSocketManager(destination_addr, destination_port, client_socket_obj)
-        client_socket_obj.server_socket_obj = server_socket_obj
+        client_socket_obj.server_socket_obj = ServerSocketManager(destination_addr, destination_port, client_socket_obj)
         print("Both the connections established")
     except:
         print("Some error occured, aborting connection")

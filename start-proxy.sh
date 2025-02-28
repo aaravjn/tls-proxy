@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 get_machine_ip() {
     ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d'/' -f1 | head -n 1
