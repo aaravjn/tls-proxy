@@ -36,7 +36,7 @@ def create_domain_certificate(domain_name: str,
     ).serial_number(
         random.SystemRandom().randint(1, 2**64 - 1)
     ).not_valid_before(
-        datetime.now(dt.timezone.utc)
+        datetime.now(dt.timezone.utc) - timedelta(days=1)
     ).not_valid_after(
         datetime.now(dt.timezone.utc) + timedelta(days=days_valid)
     ).add_extension(

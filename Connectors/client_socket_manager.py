@@ -21,18 +21,20 @@ class ClientSocketManager:
 
     def close_socket(self):
         self.socket_open = False
-        self.ssl_socket.shutdown()
+        try:
+            self.ssl_socket.shutdown()
+        except:
+            pass
         print(f"Disconnected with client {self.ip} and port {self.port}")
 
     def handle_client(self):
         def sni_callback(sock: SSL.Connection):
             server_name = sock.get_servername().decode('ascii')
 
-            # while self.server_socket_obj is None:
-            #     time.sleep(0.1)
+            while self.server_socket_obj is None:
+                time.sleep(0.1)
             
-            # self.server_socket_obj.perform_tls_handshake(server_name)
-            # time.sleep(2)
+            self.server_socket_obj.perform_tls_handshake(server_name)
 
             file_name = create_domain_certificate(server_name, "issuer-ca.crt", "issuer-ca.key")
             
@@ -59,12 +61,17 @@ class ClientSocketManager:
             return
 
         while self.socket_open:
-            message = self.ssl_socket.recv(4096)
-            if not message:
+            try:
+                message = self.ssl_socket.recv(4096)
+                if not message:
+                    self.close_socket()
+                    self.server_socket_obj.close_socket()
+                    return
+                self.server_socket_obj.send_message(message)
+            except:
                 self.close_socket()
                 self.server_socket_obj.close_socket()
                 return
-            self.server_socket_obj.send_message(message)
     
     def send_message(self, message):
         try:

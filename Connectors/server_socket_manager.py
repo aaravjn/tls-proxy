@@ -48,7 +48,10 @@ class ServerSocketManager:
 
     def close_socket(self):
         self.socket_open = False
-        self.ssl_socket.shutdown()
+        try:
+            self.ssl_socket.shutdown()
+        except:
+            pass
         print(f"Disconnected with server {self.destination_ip} and port: {self.destination_port}")
 
     def handle_server(self):
