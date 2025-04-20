@@ -32,7 +32,6 @@ class ServerSocketManager:
             self.ssl_socket.set_connect_state()
 
             self.ssl_socket.do_handshake()
-            print("TLS handshake completed with server:", server_name)
         except Exception as e:
             print("Error during TLS handshake with the server:", self.destination_ip, e)
             self.close_socket()

@@ -11,7 +11,7 @@ class ClientSocketManager:
         self.socket: socket = client_socket
 
         self.ssl_socket = None
-
+        self.server_name = None
         self.socket_open = True
         self.ip = client_address
         self.port = client_port
@@ -29,14 +29,12 @@ class ClientSocketManager:
 
     def handle_client(self):
         def sni_callback(sock: SSL.Connection):
-            server_name = sock.get_servername().decode('ascii')
+            self.server_name = sock.get_servername().decode('ascii')
 
             while self.server_socket_obj is None:
                 time.sleep(0.1)
-            
-            self.server_socket_obj.perform_tls_handshake(server_name)
 
-            file_name = create_domain_certificate(server_name, "issuer-ca.crt", "issuer-ca.key")
+            file_name = create_domain_certificate(self.server_name, "issuer-ca.crt", "issuer-ca.key")
             
             new_ctx = SSL.Context(SSL.TLS_SERVER_METHOD)
             
@@ -44,6 +42,7 @@ class ClientSocketManager:
             new_ctx.use_privatekey_file(f"./certs/{file_name}.key")
 
             sock.set_context(new_ctx)
+            print("SSL context set for server name:", self.server_name)
 
         context = SSL.Context(SSL.TLS_SERVER_METHOD)
         context.set_tlsext_servername_callback(sni_callback)
@@ -54,10 +53,12 @@ class ClientSocketManager:
 
         try:
             self.ssl_socket.do_handshake()
-        except:
+            self.server_socket_obj.perform_tls_handshake(self.server_name)
+            print("TLS handshake completed with server:", self.server_name)
+        except Exception as e:
             self.close_socket()
             self.server_socket_obj.close_socket()
-            print("SSL handshake failed")
+            print(f"SSL handshake failed: {e}")
             return
 
         while self.socket_open:

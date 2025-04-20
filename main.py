@@ -39,6 +39,8 @@ if __name__ == "__main__":
         # 853, # DNS-over-TLS
         # 587, # SMTPS
         # 990 # FTPS
+        465,
+        587
     ]
 
     threads = []
